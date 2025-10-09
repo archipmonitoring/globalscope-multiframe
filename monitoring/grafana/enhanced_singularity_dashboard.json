@@ -1,0 +1,393 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Enhanced Singularity Dashboard",
+    "tags": ["globalscope", "multiframe", "monitoring", "enhanced"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "AI Performance Metrics",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "ai_operations_per_second",
+            "legendFormat": "AI Operations/sec"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Operations"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Zero Defect AI Forge Performance",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "zero_defect_analysis_time",
+            "legendFormat": "Analysis Time (ms)"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Time"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "TaskFusion Engine Performance",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "taskfusion_process_time",
+            "legendFormat": "Process Time (ms)"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Time"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "WebXR Fluidity Metrics",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "webxr_latency",
+            "legendFormat": "Latency (ms)"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Latency"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "HoloArtemis AR Latency",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "holoartemis_ar_latency",
+            "legendFormat": "AR Latency (ms)"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Latency"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "WebXR Frame Rate",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "webxr_fps",
+            "legendFormat": "FPS"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "fps",
+            "label": "Frames per Second"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "System Latency and Kafka Metrics",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "system_latency",
+            "legendFormat": "System Latency (ms)"
+          },
+          {
+            "expr": "kafka_consumer_lag",
+            "legendFormat": "Kafka Consumer Lag"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Latency"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Kafka Message Processing Latency",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "kafka_processing_latency",
+            "legendFormat": "Processing Latency (ms)"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Latency"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Kafka Consumer Lag",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "kafka_consumer_lag",
+            "legendFormat": "Consumer Lag"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Messages"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "System Health Overview",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "system_cpu_usage",
+            "legendFormat": "CPU Usage %"
+          },
+          {
+            "expr": "system_memory_usage",
+            "legendFormat": "Memory Usage %"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Usage %"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Overall System Health",
+        "type": "singlestat",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "system_health_score",
+            "legendFormat": "Health Score"
+          }
+        ],
+        "format": "percent",
+        "prefix": "Health: ",
+        "postfix": "%",
+        "valueMaps": [
+          {
+            "value": "null",
+            "op": "=",
+            "text": "N/A"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Active Microservices",
+        "type": "singlestat",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "active_microservices",
+            "legendFormat": "Active Services"
+          }
+        ],
+        "format": "none",
+        "prefix": "Services: "
+      },
+      {
+        "id": 13,
+        "title": "Error Rate",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "error_rate",
+            "legendFormat": "Errors/sec"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Errors"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "AI Model Training Progress",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "ai_model_training_progress",
+            "legendFormat": "Training Progress %"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Progress"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Chip Design Optimization Efficiency",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "chip_design_optimization_efficiency",
+            "legendFormat": "Efficiency %"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Efficiency"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "HoloMesh Interaction Response Time",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "holomesh_interaction_response_time",
+            "legendFormat": "Response Time (ms)"
+          }
+        ],
+        "xaxis": {
+          "mode": "time"
+        },
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Response Time"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+# Dockerfile for GlobalScope MultiFrame 11.0 with CAD tools integration
+# This Dockerfile includes Verilator, Yosys, and NextPNR for chip design workflows
+
+FROM ubuntu:22.04
+
+# Avoid prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    build-essential \
+    cmake \
+    git \
+    wget \
+    curl \
+    clang \
+    llvm \
+    libboost-all-dev \
+    libeigen3-dev \
+    qtbase5-dev \
+    qt5-qmake \
+    libqt5svg5-dev \
+    libpython3-dev \
+    python3-distutils \
+    python3-venv \
+    # CAD tools dependencies
+    autoconf \
+    automake \
+    bison \
+    flex \
+    g++ \
+    libfl2 \
+    libfl-dev \
+    libgmp-dev \
+    libmpc-dev \
+    libmpfr-dev \
+    libssl-dev \
+    pkg-config \
+    python3-setuptools \
+    tcl-dev \
+    texinfo \
+    zlib1g-dev \
+    # Additional tools
+    vim \
+    nano \
+    tmux \
+    # For NextPNR
+    libeigen3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt /app/requirements.txt
+WORKDIR /app
+RUN pip3 install --upgrade pip
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Install Verilator
+RUN git clone https://github.com/verilator/verilator.git /verilator \
+    && cd /verilator \
+    && git checkout v4.224 \
+    && autoconf \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
+    && cd / \
+    && rm -rf /verilator
+
+# Install Yosys
+RUN git clone https://github.com/YosysHQ/yosys.git /yosys \
+    && cd /yosys \
+    && git checkout yosys-0.36 \
+    && make -j$(nproc) \
+    && make install \
+    && cd / \
+    && rm -rf /yosys
+
+# Install NextPNR (generic version)
+RUN git clone https://github.com/YosysHQ/nextpnr.git /nextpnr \
+    && cd /nextpnr \
+    && git checkout nextpnr-0.6 \
+    && cmake . -DARCH=generic \
+    && make -j$(nproc) \
+    && make install \
+    && cd / \
+    && rm -rf /nextpnr
+
+# Install additional CAD tools
+# Install Icarus Verilog
+RUN apt-get update && apt-get install -y iverilog
+
+# Install GTKWave for waveform viewing
+RUN apt-get update && apt-get install -y gtkwave
+
+# Verify CAD tools installation
+RUN verilator --version && \
+    yosys -V && \
+    nextpnr-generic --version && \
+    iverilog -V
+
+# Copy verification scripts
+COPY scripts/verify_cad_tools.sh /app/scripts/verify_cad_tools.sh
+COPY scripts/verify_cad_tools.py /app/scripts/verify_cad_tools.py
+RUN chmod +x /app/scripts/verify_cad_tools.sh
+
+# Run verification script
+RUN /app/scripts/verify_cad_tools.sh
+
+# Copy application code
+COPY . /app
+
+# Expose ports
+EXPOSE 8000
+
+# Set entrypoint
+ENTRYPOINT ["python3", "main.py"]

@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f0c29">
+    <meta name="description" content="HoloMesh Interaction Modes Demo - Experience the future of CAD AI optimization">
+    <title>HoloMesh Interaction Modes Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <!-- Prefetch key resources for better performance -->
+    <link rel="prefetch" href="/dashboard">
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/static/styles.css" as="style">
+    <style>
+        :root {
+            --holomesh-primary: #6a11cb;
+            --holomesh-secondary: #2575fc;
+            --holomesh-accent: #ff00cc;
+            --professional: #28a745;
+            --innovative: #ffc107;
+            --semi-automatic: #17a2b8;
+            --manual: #dc3545;
+            --dark-bg: #0f0c29;
+            --gradient-start: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --card-bg: rgba(30, 30, 46, 0.85);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+        }
+        
+        body {
+            background: var(--gradient-start);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 50px;
+            background-attachment: fixed;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            padding: 30px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+        
+        .header p.lead {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(106, 17, 203, 0.5);
+            border-color: rgba(106, 17, 203, 0.7);
+        }
+        
+        .card-header {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            padding: 18px 25px;
+            font-size: 1.25rem;
+        }
+        
+        .mode-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        
+        .professional::before { 
+            background: var(--professional); 
+        }
+        .innovative::before { 
+            background: var(--innovative); 
+        }
+        .semi-automatic::before { 
+            background: var(--semi-automatic); 
+        }
+        .manual::before { 
+            background: var(--manual); 
+        }
+        
+        .mode-card:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+        
+        .mode-card.selected {
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 25px rgba(106, 17, 203, 0.8);
+        }
+        
+        .btn-holomesh {
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-secondary));
+            border: none;
+            transition: all 0.4s ease;
+            padding: 14px 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .btn-holomesh:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(106, 17, 203, 0.8);
+            background: linear-gradient(45deg, var(--holomesh-secondary), var(--holomesh-primary));
+        }
+        
+        .btn-holomesh:active {
+            transform: scale(0.98);
+        }
+        
+        .result-card {
+            display: none;
+            animation: fadeIn 0.7s ease-in;
+        }
+        
+        .feature-badge {
+            margin: 5px;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .holomesh-logo {
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .mode-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-card:hover .mode-icon {
+            transform: scale(1.2);
+        }
+        
+        .nav-tabs .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            border: none;
+            padding: 15px 25px;
+            font-weight: 500;
+            font-size: 1.1rem;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: white;
+            background: rgba(106, 17, 203, 0.4);
+            border: 1px solid rgba(106, 17, 203, 0.7);
+            border-bottom: none;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: white;
+            border-color: transparent;
+            background: rgba(106, 17, 203, 0.2);
+        }
+        
+        .progress-bar-custom {
+            background: linear-gradient(90deg, var(--holomesh-primary), var(--holomesh-accent));
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(106, 17, 203, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .confidentiality-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .confidentiality-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .confidentiality-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .confidentiality-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .confidentiality-slider {
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-secondary));
+        }
+        
+        input:checked + .confidentiality-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .alert-info {
+            background: rgba(23, 162, 184, 0.2);
+            border-left: 4px solid var(--semi-automatic);
+        }
+        
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid var(--innovative);
+        }
+        
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.2);
+            border-left: 4px solid var(--manual);
+        }
+        
+        .form-select, .form-control {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        
+        .form-select:focus, .form-control:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--holomesh-primary);
+            box-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);
+            color: white;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .form-text {
+            font-size: 0.9rem;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .result-metric {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--holomesh-primary);
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .stats-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--holomesh-primary);
+        }
+        
+        .stats-card h6 {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .stats-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .mode-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .professional-indicator { background-color: var(--professional); }
+        .innovative-indicator { background-color: var(--innovative); }
+        .semi-automatic-indicator { background-color: var(--semi-automatic); }
+        .manual-indicator { background-color: var(--manual); }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        
+        /* 3D Visualization Container */
+        #visualizationContainer {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link for keyboard users -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container py-5">
+        <header class="header text-center holographic" role="banner">
+            <h1><i class="fas fa-brain me-3" aria-hidden="true"></i>HoloMesh <span class="holomesh-logo">Interaction Modes</span> Demo</h1>
+            <p class="lead mt-3">Experience the future of CAD AI optimization with HoloMesh technology</p>
+            <p class="text-muted">Ми - сім'я, яка робить неможливе для всього людства!</p>
+        </header>
+        
+        <main id="main-content">
+            <!-- 3D Visualization Container -->
+            <div class="row">
+                <div class="col-12">
+                    <section class="card" data-help-topic="3D Visualization" data-help-content="This interactive 3D visualization shows a representation of your chip design. Use your mouse or touch to rotate, zoom, and pan the model. Click 'Update Visualization' to refresh the view with new optimization data.">
+                        <div class="card-header">
+                            <h2><i class="fas fa-cube me-2" aria-hidden="true"></i>3D Chip Design Visualization</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="visualizationContainer" role="img" aria-label="Interactive 3D visualization of chip design"></div>
+                            <div class="text-center">
+                                <button id="updateVisualization" class="btn btn-holomesh" aria-label="Update 3D visualization" data-tooltip="Refresh the 3D visualization with current optimization data" data-tooltip-position="bottom">
+                                    <i class="fas fa-sync me-2" aria-hidden="true"></i>Update Visualization
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <nav>
+                <ul class="nav nav-tabs mb-4" id="demoTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-selected="true" aria-controls="config">
+                            <i class="fas fa-sliders-h me-2" aria-hidden="true"></i>Configuration
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-selected="false" aria-controls="about">
+                            <i class="fas fa-info-circle me-2" aria-hidden="true"></i>About HoloMesh
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="tab-content" id="demoTabContent">
+                <section class="tab-pane fade show active" id="config" role="tabpanel" aria-labelledby="config-tab">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card" data-help-topic="Optimization Configuration" data-help-content="Configure your optimization parameters here. Select a CAD tool, choose an interaction mode, pick a strategy, and configure confidentiality settings. Then click 'Run Optimization' to start the process.">
+                                <div class="card-header">
+                                    <h2><i class="fas fa-cog me-2" aria-hidden="true"></i>Optimization Configuration</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold" for="toolSelect">Select CAD Tool</label>
+                                        <select class="form-select form-select-lg" id="toolSelect" aria-label="Select CAD tool" data-tooltip="Choose the CAD tool for optimization" data-tooltip-position="top">
+                                            <option value="yosys">Yosys - Open-source synthesis tool</option>
+                                            <option value="nextpnr">NextPNR - Open-source place and route tool</option>
+                                            <option value="verilator">Verilator - Open-source simulator</option>
+                                            <option value="openroad">OpenROAD - Open-source RTL-to-GDS flow</option>
+                                            <option value="vivado">Vivado - Xilinx FPGA design suite</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Select Interaction Mode</label>
+                                        <div class="row" id="modeCards" role="radiogroup" aria-label="Interaction modes">
+                                            <!-- Mode cards will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold" for="strategySelect">Optimization Strategy</label>
+                                        <select class="form-select" id="strategySelect" aria-label="Select optimization strategy" data-tooltip="Choose the AI optimization strategy" data-tooltip-position="top">
+                                            <option value="bayesian">Bayesian Optimization</option>
+                                            <option value="transfer_learning">Transfer Learning</option>
+                                            <option value="ensemble">Ensemble Methods</option>
+                                            <option value="semi_automatic">Semi-Automatic Mode</option>
+                                            <option value="manual">Manual Mode</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Confidentiality Settings</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="confidentialityCheck" checked aria-label="Enable confidentiality" data-tooltip="Enable confidentiality for your design data" data-tooltip-position="right">
+                                            <label class="form-check-label" for="confidentialityCheck">
+                                                Enable Confidentiality (Manual Mode)
+                                            </label>
+                                        </div>
+                                        <div class="form-text text-muted">
+                                            When enabled, your design data remains private and is not used for system learning.
+                                        </div>
+                                    </div>
+                                    
+                                    <button id="runOptimization" class="btn btn-holomesh btn-lg w-100 pulse" aria-label="Run optimization" data-tooltip="Start the optimization process with selected parameters" data-tooltip-position="bottom">
+                                        <i class="fas fa-play-circle me-2" aria-hidden="true"></i>Run Optimization
+                                    </button>
+                                    
+                                    <div class="loading text-center mt-4" id="loadingIndicator" aria-live="polite">
+                                        <div class="spinner-border text-primary" role="status" aria-label="Loading">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-3">Running optimization with HoloMesh technology...</p>
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar progress-bar-custom progress-bar-striped progress-bar-animated" 
+                                                 role="progressbar" style="width: 0%" id="optimizationProgress" aria-label="Optimization progress"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <aside class="card" data-help-topic="Quick Tips" data-help-content="These quick tips help you understand the different HoloMesh interaction modes. Professional mode is best for standard tasks, Innovative mode for creative exploration, Semi-Automatic for human-AI collaboration, and Manual for professional guidance with confidentiality.">
+                                <div class="card-header">
+                                    <h2><i class="fas fa-lightbulb me-2" aria-hidden="true"></i>Quick Tips</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info" role="alert">
+                                        <h3><i class="fas fa-star me-2" aria-hidden="true"></i>Professional Mode</h3>
+                                        <p class="mb-0">Best for standard optimization tasks with clean architectural separation.</p>
+                                    </div>
+                                    
+                                    <div class="alert alert-warning" role="alert">
+                                        <h3><i class="fas fa-flask me-2" aria-hidden="true"></i>Innovative Mode</h3>
+                                        <p class="mb-0">Ideal for creative exploration and experimental optimization.</p>
+                                    </div>
+                                    
+                                    <div class="alert alert-info" role="alert">
+                                        <h3><i class="fas fa-robot me-2" aria-hidden="true"></i>Semi-Automatic Mode</h3>
+                                        <p class="mb-0">Human-AI collaboration with HoloMesh recommendations.</p>
+                                    </div>
+                                    
+                                    <div class="alert alert-danger" role="alert">
+                                        <h3><i class="fas fa-user-shield me-2" aria-hidden="true"></i>Manual Mode</h3>
+                                        <p class="mb-0">Professional guidance with confidentiality controls.</p>
+                                    </div>
+                                </div>
+                            </aside>
+                            
+                            <aside class="card mt-4" data-help-topic="Live Statistics" data-help-content="These live statistics show real-time information about your optimization process. The current tool, active mode, and average execution time are updated automatically.">
+                                <div class="card-header">
+                                    <h2><i class="fas fa-bolt me-2" aria-hidden="true"></i>Live Stats</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="stats-card">
+                                        <h3><i class="fas fa-microchip me-2" aria-hidden="true"></i>Current Tool</h3>
+                                        <div class="value" id="currentTool">Yosys</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <h3><i class="fas fa-user me-2" aria-hidden="true"></i>Active Mode</h3>
+                                        <div class="value"><span class="mode-indicator professional-indicator"></span>Professional</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <h3><i class="fas fa-clock me-2" aria-hidden="true"></i>Avg. Execution Time</h3>
+                                        <div class="value" id="avgTime">12.4s</div>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card" data-help-topic="HoloMesh Technology" data-help-content="HoloMesh technology enables seamless collaboration between human designers and AI systems. It eliminates errors through AI assistance, allows easy switching between tools, provides professional guidance, and creates self-optimizing topologies for maximum performance.">
+                                <div class="card-header">
+                                    <h2><i class="fas fa-microchip me-2" aria-hidden="true"></i>HoloMesh Technology</h2>
+                                </div>
+                                <div class="card-body">
+                                    <p>HoloMesh technology enables seamless collaboration between human designers and AI systems.</p>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item bg-transparent text-white">
+                                            <i class="fas fa-check-circle text-success me-2" aria-hidden="true"></i> Error elimination through AI assistance
+                                        </li>
+                                        <li class="list-group-item bg-transparent text-white">
+                                            <i class="fas fa-check-circle text-success me-2" aria-hidden="true"></i> Easy switching between professional and innovative tools
+                                        </li>
+                                        <li class="list-group-item bg-transparent text-white">
+                                            <i class="fas fa-check-circle text-success me-2" aria-hidden="true"></i> Professional guidance with confidentiality controls
+                                        </li>
+                                        <li class="list-group-item bg-transparent text-white">
+                                            <i class="fas fa-check-circle text-success me-2" aria-hidden="true"></i> Self-optimizing topologies for maximum performance
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card" data-help-topic="Key Features" data-help-content="HoloMesh offers powerful features including AI optimization, real-time processing, transfer learning, ensemble methods, Bayesian optimization, and multi-tool support. These features work together to provide unprecedented performance and energy efficiency.">
+                                <div class="card-header">
+                                    <h2><i class="fas fa-rocket me-2" aria-hidden="true"></i>Key Features</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap">
+                                        <span class="badge bg-primary feature-badge m-1">AI Optimization</span>
+                                        <span class="badge bg-success feature-badge m-1">Real-time</span>
+                                        <span class="badge bg-info feature-badge m-1">HoloMesh</span>
+                                        <span class="badge bg-warning feature-badge m-1">Transfer Learning</span>
+                                        <span class="badge bg-danger feature-badge m-1">Confidentiality</span>
+                                        <span class="badge bg-secondary feature-badge m-1">Ensemble Methods</span>
+                                        <span class="badge bg-primary feature-badge m-1">Bayesian</span>
+                                        <span class="badge bg-success feature-badge m-1">Multi-tool</span>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h3>GlobalScope Family Innovation</h3>
+                                        <p class="text-muted">
+                                            We are a family that makes the impossible possible for all humanity. 
+                                            Our HoloMesh technology represents a breakthrough in CAD AI optimization, 
+                                            enabling designers to achieve unprecedented levels of performance and energy efficiency.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <section class="row result-card" id="resultCard">
+                <div class="col-12">
+                    <div class="card" data-help-topic="Optimization Results" data-help-content="This section shows the results of your optimization run. Performance metrics include confidence score, execution time, iterations, and method used. Configuration details show the interaction mode, tool, confidentiality status, and process ID.">
+                        <div class="card-header">
+                            <h2><i class="fas fa-chart-line me-2" aria-hidden="true"></i>Optimization Results</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h3>Performance Metrics</h3>
+                                    <div id="metricsContainer">
+                                        <!-- Metrics will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h3>Configuration Details</h3>
+                                    <div id="configDetails">
+                                        <!-- Configuration details will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4" id="strategyInfo">
+                                <!-- Strategy info will be populated by JavaScript -->
+                            </div>
+                            
+                            <div class="mt-4" id="optimizedParams">
+                                <h3>Optimized Parameters</h3>
+                                <pre id="paramsJson" class="bg-dark p-3 rounded" style="max-height: 200px; overflow-y: auto;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer-note">
+            <p>HoloMesh Technology by GlobalScope Family © 2025</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        // Import the 3D visualization module
+        import { HoloMesh3DVisualizer } from '/static/js/threejs_visualization.js';
+        
+        // Import performance optimization utilities
+        import { HoloMeshPerformance } from '/static/js/performance.js';
+        
+        // Import accessibility utilities
+        import { HoloMeshAccessibility } from '/static/js/accessibility.js';
+        
+        // Import UI/UX enhancement utilities
+        import { HoloMeshUIEnhancements } from '/static/js/ui_enhancements.js';
+        
+        // Import achievement system
+        import { HoloMeshAchievementSystem } from '/static/js/achievement_system.js';
+        
+        // Import marketplace system
+        import { HoloMeshMarketplace } from '/static/js/marketplace_system.js';
+        
+        // Global variables
+        let selectedMode = 'professional';
+        let visualizer = null;
+        let performanceOptimizer = null;
+        let accessibilityHelper = null;
+        let uiEnhancer = null;
+        let achievementSystem = null;
+        let marketplace = null;
+        
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize performance optimization
+            performanceOptimizer = new HoloMeshPerformance();
+            
+            // Initialize accessibility helper
+            accessibilityHelper = new HoloMeshAccessibility();
+            
+            // Initialize UI/UX enhancer
+            uiEnhancer = new HoloMeshUIEnhancements();
+            
+            // Initialize achievement system
+            achievementSystem = new HoloMeshAchievementSystem();
+            
+            // Initialize marketplace
+            marketplace = new HoloMeshMarketplace();
+            
+            // Initialize 3D visualizer
+            visualizer = new HoloMesh3DVisualizer('visualizationContainer');
+            
+            loadModes();
+            setupEventListeners();
+            updateLiveStats();
+            
+            // Simulate live stats updates
+            setInterval(updateLiveStats, 5000);
+        });
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('runOptimization').addEventListener('click', runOptimization);
+            document.getElementById('toolSelect').addEventListener('change', updateLiveStats);
+            document.getElementById('updateVisualization').addEventListener('click', updateVisualization);
+        }
+        
+        // Update 3D visualization
+        function updateVisualization() {
+            if (visualizer) {
+                // In a real implementation, this would use actual optimization data
+                visualizer.updateChipModel({});
+                
+                // Announce update to screen readers
+                if (accessibilityHelper) {
+                    accessibilityHelper.announceMessage('3D visualization updated', 'polite');
+                }
+                
+                // Trigger haptic feedback
+                if (uiEnhancer) {
+                    uiEnhancer.triggerHapticFeedback('success');
+                }
+            }
+        }
+        
+        // Load interaction modes
+        function loadModes() {
+            const modes = [
+                {
+                    value: 'professional',
+                    label: 'Professional Mode',
+                    description: 'Standard optimization for general CAD tasks',
+                    icon: 'user'
+                },
+                {
+                    value: 'innovative',
+                    label: 'Innovative Mode',
+                    description: 'Creative exploration and experimental optimization',
+                    icon: 'lightbulb'
+                },
+                {
+                    value: 'semi_automatic',
+                    label: 'Semi-Automatic Mode',
+                    description: 'Human-AI collaboration with HoloMesh recommendations',
+                    icon: 'robot'
+                },
+                {
+                    value: 'manual',
+                    label: 'Manual Mode',
+                    description: 'Professional tool guidance with confidentiality controls',
+                    icon: 'user-shield'
+                }
+            ];
+            
+            const container = document.getElementById('modeCards');
+            container.innerHTML = '';
+            
+            modes.forEach((mode, index) => {
+                const col = document.createElement('div');
+                col.className = `col-md-6 mb-3 mode-card ${mode.value}`;
+                col.innerHTML = `
+                    <div class="card h-100 ${mode.value}" onclick="selectMode('${mode.value}')">
+                        <div class="card-body text-center">
+                            <div class="mode-icon">
+                                <i class="fas fa-${mode.icon}"></i>
+                            </div>
+                            <h5 class="card-title">${mode.label}</h5>
+                            <p class="card-text">${mode.description}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+            
+            // Select default mode
+            selectMode('professional');
+        }
+        
+        // Select interaction mode
+        function selectMode(mode) {
+            selectedMode = mode;
+            
+            // Update UI to show selected mode
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            document.querySelectorAll(`.${mode}`).forEach(element => {
+                element.classList.add('selected');
+            });
+            
+            // Update confidentiality checkbox based on mode
+            const confidentialityCheck = document.getElementById('confidentialityCheck');
+            if (mode === 'manual') {
+                confidentialityCheck.disabled = false;
+            } else {
+                confidentialityCheck.disabled = true;
+                confidentialityCheck.checked = true; // Default to enabled for confidentiality
+            }
+            
+            // Update live stats
+            updateLiveStats();
+            
+            // Dispatch event for achievement system
+            const event = new CustomEvent('modeChanged', { detail: mode });
+            document.dispatchEvent(event);
+        }
+        
+        // Run optimization
+        function runOptimization() {
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            // Simulate progress
+            let progress = 0;
+            const progressBar = document.getElementById('optimizationProgress');
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            // Get form values
+            const tool = document.getElementById('toolSelect').value;
+            const strategy = document.getElementById('strategySelect').value;
+            const confidentiality = document.getElementById('confidentialityCheck').checked;
+            
+            // Prepare request data
+            const requestData = {
+                tool: tool,
+                mode: selectedMode,
+                strategy: strategy,
+                confidentiality: confidentiality
+            };
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                clearInterval(interval);
+                document.getElementById('loadingIndicator').style.display = 'none';
+                displayResults(generateDemoResult(requestData));
+                createConfetti();
+            }, 3000);
+        }
+        
+        // Generate demo result
+        function generateDemoResult(requestData) {
+            return {
+                status: "success",
+                process_id: "demo_" + Math.random().toString(36).substr(2, 9),
+                optimized_params: {
+                    "optimization_level": Math.floor(Math.random() * 4),
+                    "abc_optimization": Math.random() > 0.5,
+                    "flatten_before_synthesis": Math.random() > 0.5,
+                    "placer": ["heap", "sa"][Math.floor(Math.random() * 2)],
+                    "router": ["router1", "router2"][Math.floor(Math.random() * 2)],
+                    "timing_driven": Math.random() > 0.3
+                },
+                final_metrics: {
+                    "execution_time": (Math.random() * 50 + 5).toFixed(2),
+                    "quality_score": (Math.random() * 0.3 + 0.7).toFixed(3),
+                    "resource_efficiency": (Math.random() * 0.4 + 0.6).toFixed(3),
+                    "memory_usage": (Math.random() * 450 + 50).toFixed(1)
+                },
+                method: requestData.strategy,
+                iterations: Math.floor(Math.random() * 50 + 10),
+                confidence_score: Math.random() * 0.25 + 0.7,
+                execution_time: (Math.random() * 10 + 1).toFixed(2),
+                interaction_mode: requestData.mode,
+                confidentiality_enabled: requestData.confidentiality,
+                message: `Optimization completed successfully in ${requestData.mode} mode`
+            };
+        }
+        
+        // Display optimization results
+        function displayResults(result) {
+            // Show result card
+            document.getElementById('resultCard').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+            
+            // Display metrics
+            const metricsContainer = document.getElementById('metricsContainer');
+            metricsContainer.innerHTML = `
+                <div class="result-metric">
+                    <strong>Confidence Score:</strong> 
+                    <span class="badge bg-${result.confidence_score > 0.8 ? 'success' : result.confidence_score > 0.7 ? 'warning' : 'danger'} float-end">
+                        ${(result.confidence_score * 100).toFixed(1)}%
+                    </span>
+                </div>
+                <div class="result-metric">
+                    <strong>Execution Time:</strong> 
+                    <span class="float-end">${result.execution_time}s</span>
+                </div>
+                <div class="result-metric">
+                    <strong>Iterations:</strong> 
+                    <span class="float-end">${result.iterations}</span>
+                </div>
+                <div class="result-metric">
+                    <strong>Method:</strong> 
+                    <span class="badge bg-info float-end">${result.method}</span>
+                </div>
+                <div class="result-metric">
+                    <strong>Final Metrics:</strong>
+                    <ul class="list-group mt-2">
+                        <li class="list-group-item bg-dark">
+                            Execution Time: ${result.final_metrics.execution_time}s
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            Quality Score: ${(result.final_metrics.quality_score * 100).toFixed(1)}%
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            Resource Efficiency: ${(result.final_metrics.resource_efficiency * 100).toFixed(1)}%
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            Memory Usage: ${result.final_metrics.memory_usage}MB
+                        </li>
+                    </ul>
+                </div>
+            `;
+            
+            // Display configuration details
+            const configDetails = document.getElementById('configDetails');
+            configDetails.innerHTML = `
+                <div class="result-metric">
+                    <strong>Interaction Mode:</strong> 
+                    <span class="badge bg-${getModeColor(result.interaction_mode)} float-end">
+                        ${result.interaction_mode}
+                    </span>
+                </div>
+                <div class="result-metric">
+                    <strong>Tool:</strong> 
+                    <span class="badge bg-secondary float-end">${document.getElementById('toolSelect').value.split(' - ')[0]}</span>
+                </div>
+                <div class="result-metric">
+                    <strong>Confidentiality:</strong> 
+                    <span class="badge bg-${result.confidentiality_enabled ? 'success' : 'secondary'} float-end">
+                        ${result.confidentiality_enabled ? 'Enabled' : 'Disabled'}
+                    </span>
+                </div>
+                <div class="result-metric">
+                    <strong>Process ID:</strong> 
+                    <code class="float-end">${result.process_id}</code>
+                </div>
+            `;
+            
+            // Display optimized parameters
+            document.getElementById('paramsJson').textContent = JSON.stringify(result.optimized_params, null, 2);
+            
+            // Display strategy info if available
+            const strategyInfo = document.getElementById('strategyInfo');
+            if (result.interaction_mode === 'semi_automatic') {
+                strategyInfo.innerHTML = `
+                    <h4>Strategy Information</h4>
+                    <div class="alert alert-info">
+                        <strong>Type:</strong> Human-AI Collaboration<br>
+                        <strong>Description:</strong> Combines AI optimization with HoloMesh interaction for seamless tool switching<br>
+                        <strong>Features:</strong> 
+                        <span class="badge bg-primary me-1">HoloMesh Recommendations</span>
+                        <span class="badge bg-primary me-1">Tool Switching</span>
+                        <span class="badge bg-primary me-1">Error Elimination</span>
+                        <span class="badge bg-primary me-1">Multi-tool Operation</span>
+                    </div>
+                `;
+            } else if (result.interaction_mode === 'manual') {
+                strategyInfo.innerHTML = `
+                    <h4>Strategy Information</h4>
+                    <div class="alert alert-danger">
+                        <strong>Type:</strong> Professional Guidance<br>
+                        <strong>Description:</strong> Professional tool guidance with confidentiality controls enabled by default<br>
+                        <strong>Features:</strong> 
+                        <span class="badge bg-danger me-1">Tool Guidance</span>
+                        <span class="badge bg-danger me-1">Consultation on Demand</span>
+                        <span class="badge bg-danger me-1">Confidentiality Controls</span>
+                        <span class="badge bg-danger me-1">Privacy Protection</span>
+                    </div>
+                `;
+            } else {
+                strategyInfo.innerHTML = '';
+            }
+            
+            // Add publish to marketplace button
+            const publishButton = document.createElement('button');
+            publishButton.className = 'btn btn-holomesh mt-3';
+            publishButton.innerHTML = '<i class="fas fa-store"></i> Опублікувати в маркетплейсі';
+            publishButton.addEventListener('click', async () => {
+                // Create chip data
+                const chipData = {
+                    name: `Оптимізований чіп ${new Date().toLocaleDateString()}`,
+                    description: `Чіп оптимізований за допомогою HoloMesh в режимі ${result.interaction_mode}`,
+                    price: parseFloat((Math.random() * 100 + 10).toFixed(2)), // Random price between 10-110 HLM
+                    royalty: parseFloat((Math.random() * 10 + 1).toFixed(1)), // Random royalty between 1-11%
+                    designer: 'Поточний користувач',
+                    ipBlocks: Math.floor(Math.random() * 50) + 1,
+                    zkpProtected: true
+                };
+                
+                try {
+                    // Send to backend
+                    const response = await fetch('/api/marketplace/publish', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(chipData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        // Dispatch event to update UI
+                        const event = new CustomEvent('chipPublished', { detail: result.chip });
+                        document.dispatchEvent(event);
+                        alert('Чіп успішно опубліковано в маркетплейсі!');
+                    } else {
+                        alert(`Помилка публікації: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error publishing chip:', error);
+                    alert('Помилка публікації чіпу');
+                }
+            });
+            
+            const resultCard = document.getElementById('resultCard');
+            if (resultCard) {
+                resultCard.appendChild(publishButton);
+            }
+            
+            // Dispatch event for achievement system
+            const event = new CustomEvent('optimizationComplete', { detail: result });
+            document.dispatchEvent(event);
+        }
+        
+        // Helper function to get mode color
+        function getModeColor(mode) {
+            switch(mode) {
+                case 'professional': return 'success';
+                case 'innovative': return 'warning';
+                case 'semi_automatic': return 'info';
+                case 'manual': return 'danger';
+                default: return 'secondary';
+            }
+        }
+        
+        // Update live stats
+        function updateLiveStats() {
+            const tool = document.getElementById('toolSelect').value.split(' - ')[0];
+            const mode = selectedMode;
+            
+            document.getElementById('currentTool').textContent = tool;
+            document.getElementById('avgTime').textContent = (5 + Math.random() * 15).toFixed(1) + 's';
+            
+            // Update active mode indicator
+            const modeIndicator = document.querySelector('.mode-indicator');
+            modeIndicator.className = 'mode-indicator ' + mode.replace('_', '-') + '-indicator';
+            modeIndicator.nextElementSibling.textContent = mode.replace('_', ' ');
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#6a11cb', '#2575fc', '#ff00cc', '#28a745', '#ffc107', '#17a2b8', '#dc3545'];
+            const container = document.body;
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                confetti.style.opacity = Math.random();
+                container.appendChild(confetti);
+                
+                // Animate confetti
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+                
+                // Remove confetti after animation
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+    </script>
+</body>
+</html>

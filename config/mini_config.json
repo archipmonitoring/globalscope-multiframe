@@ -1,0 +1,63 @@
+{
+  "system": {
+    "name": "GlobalScope Innovation Nexus Mini System",
+    "version": "1.0.0",
+    "mission": "Creating breakthrough innovations that save lives",
+    "vision": "Building a better world through human-centered technology"
+  },
+  "server": {
+    "host": "localhost",
+    "port": 8080,
+    "debug": true
+  },
+  "monitoring": {
+    "tender_sources": [
+      {
+        "name": "Government Defense Portal",
+        "url": "https://example.gov/defense/tenders",
+        "keywords": ["chip", "microchip", "defense", "drone", "uav"]
+      },
+      {
+        "name": "Healthcare Technology Portal",
+        "url": "https://example.gov/health/tenders",
+        "keywords": ["medical", "healthcare", "device", "sensor"]
+      },
+      {
+        "name": "Environmental Technology Portal",
+        "url": "https://example.gov/environment/tenders",
+        "keywords": ["environment", "climate", "pollution", "monitoring"]
+      }
+    ]
+  },
+  "innovation": {
+    "categories": [
+      "defense",
+      "healthcare",
+      "education",
+      "environment",
+      "energy",
+      "scientific"
+    ],
+    "evaluation_criteria": {
+      "breakthrough_potential": 0.4,
+      "societal_impact": 0.3,
+      "feasibility": 0.2,
+      "ethical_compliance": 0.1
+    }
+  },
+  "quality": {
+    "reliability_target": 0.9999,
+    "defect_tolerance": 0,
+    "security_level": "quantum"
+  },
+  "human_centered": {
+    "principle": "Working for people as for oneself",
+    "focus": "Building platforms that serve humanity",
+    "values": [
+      "innovation",
+      "integrity",
+      "impact",
+      "inclusion"
+    ]
+  }
+}

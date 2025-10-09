@@ -1,0 +1,313 @@
+openapi: 3.0.0
+info:
+  title: GlobalScope MultiFrame 11.0 API
+  description: API for the GlobalScope MultiFrame 11.0 chip design platform
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /system/:
+    get:
+      summary: Root endpoint
+      description: Returns the status of the system
+      responses:
+        '200':
+          description: System status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+  /system/mode/{mode}:
+    post:
+      summary: Set system mode
+      description: Set the execution mode of the system
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: System mode set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  mode:
+                    type: string
+        '400':
+          description: Invalid mode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+  /auth/login:
+    post:
+      summary: User login
+      description: Authenticate a user and obtain a session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /auth/logout:
+    post:
+      summary: User logout
+      description: Terminate a user session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: string
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /chip/process:
+    post:
+      summary: Create chip process
+      description: Initialize a new chip design process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                process_id:
+                  type: string
+                chip_data:
+                  type: object
+      responses:
+        '200':
+          description: Chip process created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /chip/zero-defect:
+    post:
+      summary: Ensure zero defect chip design
+      description: Run zero defect engine to ensure chip has no defects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                chip_id:
+                  type: string
+                chip_data:
+                  type: object
+                lang:
+                  type: string
+      responses:
+        '200':
+          description: Zero defect process completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /analytics/metrics/{chip_id}:
+    get:
+      summary: Get chip metrics
+      description: Retrieve metrics for a specific chip
+      parameters:
+        - name: chip_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Chip metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /analytics/trends/{chip_id}:
+    get:
+      summary: Get chip trends
+      description: Analyze trends for a specific chip
+      parameters:
+        - name: chip_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: hours
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 24
+      responses:
+        '200':
+          description: Chip trends analyzed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /security/threats:
+    get:
+      summary: Get security threats
+      description: Retrieve information about blocked security threats
+      responses:
+        '200':
+          description: Security threats retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  threats_blocked:
+                    type: integer
+  /hash/rtl:
+    post:
+      summary: Generate RTL hash
+      description: Generate a hash for RTL code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rtl_code:
+                  type: string
+                algorithm:
+                  type: string
+                  default: sha256
+      responses:
+        '200':
+          description: RTL hash generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /simulate/quantum/{chip_id}:
+    post:
+      summary: Run quantum simulation
+      description: Execute a quantum simulation for a chip
+      parameters:
+        - name: chip_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sim_type:
+                  type: string
+                params:
+                  type: object
+      responses:
+        '200':
+          description: Quantum simulation completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /health/:
+    get:
+      summary: Health check
+      description: Check the health status of the system
+      responses:
+        '200':
+          description: Health check results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                  passed:
+                    type: integer
+                  failed:
+                    type: integer
+components:
+  schemas:
+    ChipData:
+      type: object
+      properties:
+        type:
+          type: string
+        params:
+          type: object
+    ProcessData:
+      type: object
+      properties:
+        process_id:
+          type: string
+        chip_data:
+          $ref: '#/components/schemas/ChipData'

@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  holomisha-core-cad:
+    build:
+      context: .
+      dockerfile: Dockerfile.cad
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis-master
+      - CAD_TOOLS_AVAILABLE=true
+    depends_on:
+      - redis-master
+    volumes:
+      - ./projects:/app/projects
+      - ./chip_designs:/app/chip_designs
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true  # Required for some CAD tools
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+
+  redis-master:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  kong:
+    image: kong:3.0
+    environment:
+      - KONG_DATABASE=off
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+    ports:
+      - "8001:8001"
+    depends_on:
+      - holomisha-core-cad
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:9.5.2
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  cad-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.cad
+    command: ["python3", "-m", "src.chip_design.cad_worker"]
+    environment:
+      - REDIS_HOST=redis-master
+      - WORKER_TYPE=cad
+    depends_on:
+      - redis-master
+    volumes:
+      - ./projects:/app/projects
+      - ./chip_designs:/app/chip_designs
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+
+volumes:
+  redis_data:
+  grafana_data:
+  prometheus_data:

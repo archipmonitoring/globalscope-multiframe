@@ -1,0 +1,57 @@
+# Prometheus Configuration for GlobalScope MultiFrame
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # Правила записуються в окремих файлах
+  - "rules/*.yml"
+
+scrape_configs:
+  # Скрейпинг метрик самого Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Скрейпинг метрик API Gateway
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8000']
+    metrics_path: '/metrics'
+
+  # Скрейпинг метрик AI Service
+  - job_name: 'ai-service'
+    static_configs:
+      - targets: ['ai-service:8000']
+    metrics_path: '/metrics'
+
+  # Скрейпинг метрик Chip Design Service
+  - job_name: 'chip-design'
+    static_configs:
+      - targets: ['chip-design:8000']
+    metrics_path: '/metrics'
+
+  # Скрейпинг метрик Fab Service
+  - job_name: 'fab-service'
+    static_configs:
+      - targets: ['fab-service:8000']
+    metrics_path: '/metrics'
+
+  # Скрейпинг метрик Community Service
+  - job_name: 'community-service'
+    static_configs:
+      - targets: ['community-service:8000']
+    metrics_path: '/metrics'
+
+  # Скрейпинг метрик Kafka
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+    metrics_path: '/metrics'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # Alertmanager endpoint
+          - alertmanager:9093

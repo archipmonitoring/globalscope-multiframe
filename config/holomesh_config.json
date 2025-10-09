@@ -1,0 +1,246 @@
+{
+  "holomesh": {
+    "api_version": "2.0",
+    "interaction_modes": {
+      "professional": {
+        "description": "Standard mode for general CAD optimization tasks",
+        "default_confidentiality": true,
+        "holomesh_integration": false,
+        "recommendation_level": "basic"
+      },
+      "innovative": {
+        "description": "Creative exploration and experimental optimization",
+        "default_confidentiality": true,
+        "holomesh_integration": false,
+        "recommendation_level": "experimental"
+      },
+      "semi_automatic": {
+        "description": "Human-AI collaboration with easy tool switching",
+        "default_confidentiality": true,
+        "holomesh_integration": true,
+        "recommendation_level": "advanced",
+        "features": [
+          "holomesh_recommendations",
+          "tool_switching",
+          "error_elimination",
+          "multi_tool_operation"
+        ]
+      },
+      "manual": {
+        "description": "Professional tool guidance with confidentiality controls",
+        "default_confidentiality": true,
+        "holomesh_integration": true,
+        "recommendation_level": "guidance",
+        "features": [
+          "tool_guidance",
+          "consultation_on_demand",
+          "confidentiality_controls",
+          "learning_activation"
+        ]
+      }
+    },
+    "confidentiality": {
+      "enabled_by_default": true,
+      "encryption_level": "AES-256",
+      "data_retention": "30_days",
+      "learning_opt_out": true
+    },
+    "recommendations": {
+      "engine": "transfer_learning",
+      "similarity_threshold": 0.7,
+      "max_recommendations": 5,
+      "confidence_scoring": {
+        "semi_automatic": {
+          "base_score": 0.8,
+          "holomesh_bonus": 0.1,
+          "confidence_range": [0.7, 0.95]
+        },
+        "manual": {
+          "base_score": 0.75,
+          "guidance_bonus": 0.05,
+          "confidence_range": [0.7, 0.9]
+        }
+      }
+    },
+    "performance": {
+      "max_concurrent_optimizations": 10,
+      "default_max_iterations": 50,
+      "timeout_seconds": 300,
+      "cache_ttl_hours": 168
+    }
+  },
+  "tools": {
+    "yosys": {
+      "supported_modes": ["professional", "innovative", "semi_automatic", "manual"],
+      "default_parameters": {
+        "optimization_level": 2,
+        "abc_optimization": true,
+        "flatten_before_synthesis": true
+      },
+      "parameter_ranges": {
+        "optimization_level": [0, 3],
+        "abc_optimization": [true, false],
+        "flatten_before_synthesis": [true, false],
+        "dfflibmap": [true, false],
+        "timing_analysis": [true, false]
+      },
+      "optimization_profiles": {
+        "speed": {
+          "optimization_level": 1,
+          "abc_optimization": true,
+          "flatten_before_synthesis": false
+        },
+        "area": {
+          "optimization_level": 3,
+          "abc_optimization": true,
+          "flatten_before_synthesis": true
+        },
+        "balance": {
+          "optimization_level": 2,
+          "abc_optimization": true,
+          "flatten_before_synthesis": true
+        }
+      }
+    },
+    "nextpnr": {
+      "supported_modes": ["professional", "innovative", "semi_automatic", "manual"],
+      "default_parameters": {
+        "placer": "heap",
+        "router": "router1",
+        "timing_driven": true
+      },
+      "parameter_ranges": {
+        "placer": ["heap", "sa"],
+        "router": ["router1", "router2"],
+        "timing_driven": [true, false],
+        "seed": [1, 1000]
+      },
+      "optimization_profiles": {
+        "timing": {
+          "placer": "heap",
+          "router": "router1",
+          "timing_driven": true
+        },
+        "area": {
+          "placer": "sa",
+          "router": "router2",
+          "timing_driven": false
+        },
+        "mixed": {
+          "placer": "heap",
+          "router": "router2",
+          "timing_driven": true
+        }
+      }
+    },
+    "verilator": {
+      "supported_modes": ["professional", "innovative", "semi_automatic", "manual"],
+      "default_parameters": {
+        "optimization_level": 2,
+        "language_extensions": "sv",
+        "timing_analysis": true
+      },
+      "parameter_ranges": {
+        "optimization_level": [0, 3],
+        "language_extensions": ["sv", "v"],
+        "timing_analysis": [true, false],
+        "coverage_analysis": [true, false]
+      },
+      "optimization_profiles": {
+        "simulation": {
+          "optimization_level": 2,
+          "language_extensions": "sv",
+          "timing_analysis": true
+        },
+        "debug": {
+          "optimization_level": 0,
+          "language_extensions": "sv",
+          "timing_analysis": false
+        },
+        "performance": {
+          "optimization_level": 3,
+          "language_extensions": "sv",
+          "timing_analysis": true
+        }
+      }
+    },
+    "openroad": {
+      "supported_modes": ["professional", "innovative", "semi_automatic", "manual"],
+      "default_parameters": {
+        "global_placement": true,
+        "detailed_placement": true,
+        "global_routing": true,
+        "detailed_routing": true
+      },
+      "parameter_ranges": {
+        "global_placement": [true, false],
+        "detailed_placement": [true, false],
+        "global_routing": [true, false],
+        "detailed_routing": [true, false],
+        "timing_driven": [true, false],
+        "clock_tree_synthesis": [true, false]
+      },
+      "optimization_profiles": {
+        "full_flow": {
+          "global_placement": true,
+          "detailed_placement": true,
+          "global_routing": true,
+          "detailed_routing": true
+        },
+        "placement_only": {
+          "global_placement": true,
+          "detailed_placement": true,
+          "global_routing": false,
+          "detailed_routing": false
+        },
+        "routing_only": {
+          "global_placement": false,
+          "detailed_placement": false,
+          "global_routing": true,
+          "detailed_routing": true
+        }
+      }
+    },
+    "vivado": {
+      "supported_modes": ["professional", "innovative", "semi_automatic", "manual"],
+      "default_parameters": {
+        "synthesis_strategy": "AreaOptimized_high",
+        "implementation_strategy": "Performance_Explore",
+        "directive": "Default"
+      },
+      "parameter_ranges": {
+        "synthesis_strategy": ["AreaOptimized_high", "AreaOptimized_medium", "AreaPowerOptimized_high", "AlternateRoutability", "Flow_AreaOptimized_high", "Flow_PerfOptimized_high", "PerformanceOptimized", "PowerOptimized_high", "PowerOptimized_medium", "RuntimeOptimized"],
+        "implementation_strategy": ["Area_Explore", "Area_ExploreSequential", "Area_ExploreWithRemap", "Default", "ExtraTimingOpt", "Performance_Explore", "Performance_ExplorePostRoutePhysOpt", "Performance_ExtraTimingOpt", "Performance_RefinePlacement", "Performance_Retiming", "Place_Explore", "Place_StaticTimingAnalysis", "PostPlacePhysOpt_Explore", "PostRoutePhysOpt_Explore", "PostRoutePhysOpt_ExploreWithSiPostRoute", "PostRoutePhysOpt_Standard", "PostRoutePhysOpt_StandardWithSiPostRoute", "Route_Explore", "Route_ExploreWithSiOnRoute", "Route_ExploreWithSiPostRoute", "Route_ExploreWithSiPostRouteAndRoutePhysOpt", "Route_Standard", "Route_StandardWithSiOnRoute", "Route_StandardWithSiPostRoute", "Route_StandardWithSiPostRouteAndRoutePhysOpt"],
+        "directive": ["Default", "RuntimeOptimized", "AreaOptimized", "PerformanceOptimized", "PowerOptimized", "NoiseAware", "SsiFriendly", "AlternateCLBRouting", "MoreGlobalIterations", "HigherDelayCost", "AdvancedSkewModeling", "DistributedSynthesis", "AggressiveFanoutOpt", "AggressiveRemap", "FewerCarryChains", "AltSpreadLogic_high", "AltSpreadLogic_medium", "AltSpreadLogic_low", "AlternateDelayModeling", "Timed", "NetDelay_high", "NetDelay_low", "Retiming", "ExtraNetDelay_high", "ExtraNetDelay_low", "MinimizeArea", "AlternateReplication"]
+      },
+      "optimization_profiles": {
+        "area": {
+          "synthesis_strategy": "AreaOptimized_high",
+          "implementation_strategy": "Area_Explore",
+          "directive": "AreaOptimized"
+        },
+        "performance": {
+          "synthesis_strategy": "PerformanceOptimized",
+          "implementation_strategy": "Performance_Explore",
+          "directive": "PerformanceOptimized"
+        },
+        "power": {
+          "synthesis_strategy": "PowerOptimized_high",
+          "implementation_strategy": "PowerOptimized_high",
+          "directive": "PowerOptimized"
+        },
+        "balanced": {
+          "synthesis_strategy": "Flow_PerfOptimized_high",
+          "implementation_strategy": "Default",
+          "directive": "Default"
+        }
+      }
+    }
+  },
+  "logging": {
+    "interaction_mode_changes": true,
+    "confidentiality_events": true,
+    "holomesh_recommendations": true,
+    "performance_metrics": true
+  }
+}

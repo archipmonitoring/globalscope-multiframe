@@ -1,0 +1,74 @@
+# Filebeat Configuration for GlobalScope MultiFrame Microservices
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/microservices/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  fields:
+    service: api-gateway
+  fields_under_root: true
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/ai-service/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  fields:
+    service: ai-service
+  fields_under_root: true
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/chip-design/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  fields:
+    service: chip-design
+  fields_under_root: true
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/fab-service/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  fields:
+    service: fab-service
+  fields_under_root: true
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/community-service/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  fields:
+    service: community-service
+  fields_under_root: true
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 1
+
+setup.kibana:
+  # Kibana Host
+  host: "kibana:5601"
+
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["elasticsearch:9200"]
+  username: "elastic"
+  password: "changeme"
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~

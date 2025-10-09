@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f0c29">
+    <meta name="description" content="HoloMesh Performance Dashboard - Monitor and analyze CAD AI optimization performance">
+    <title>HoloMesh Performance Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="/manifest.json">
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/static/styles.css" as="style">
+    <style>
+        :root {
+            --holomesh-primary: #6a11cb;
+            --holomesh-secondary: #2575fc;
+            --holomesh-accent: #ff00cc;
+            --professional: #28a745;
+            --innovative: #ffc107;
+            --semi-automatic: #17a2b8;
+            --manual: #dc3545;
+            --dark-bg: #0f0c29;
+            --gradient-bg: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --card-bg: rgba(30, 30, 46, 0.85);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+        }
+        
+        body {
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 50px;
+            background-attachment: fixed;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            padding: 30px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+        
+        .header p.lead {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(106, 17, 203, 0.5);
+            border-color: rgba(106, 17, 203, 0.7);
+        }
+        
+        .card-header {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            padding: 18px 25px;
+            font-size: 1.25rem;
+        }
+        
+        .mode-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-card:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .professional { border-left: 5px solid var(--professional); }
+        .innovative { border-left: 5px solid var(--innovative); }
+        .semi-automatic { border-left: 5px solid var(--semi-automatic); }
+        .manual { border-left: 5px solid var(--manual); }
+        
+        .btn-holomesh {
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-secondary));
+            border: none;
+            transition: all 0.4s ease;
+            padding: 12px 25px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 1rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .btn-holomesh:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(106, 17, 203, 0.8);
+            background: linear-gradient(45deg, var(--holomesh-secondary), var(--holomesh-primary));
+        }
+        
+        .btn-holomesh:active {
+            transform: scale(0.98);
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .metric-card:hover::before {
+            left: 100%;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 15px 0;
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .chart-container {
+            height: 350px;
+            margin: 25px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .holomesh-logo {
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--holomesh-primary), var(--holomesh-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-select, .form-control {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        
+        .form-select:focus, .form-control:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--holomesh-primary);
+            box-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);
+            color: white;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .table-dark {
+            --bs-table-bg: rgba(0, 0, 0, 0.3);
+            --bs-table-striped-bg: rgba(0, 0, 0, 0.25);
+            --bs-table-hover-bg: rgba(106, 17, 203, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            font-weight: 500;
+        }
+        
+        .list-group-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar-custom {
+            background: linear-gradient(90deg, var(--holomesh-primary), var(--holomesh-accent));
+        }
+        
+        .stats-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--holomesh-primary);
+        }
+        
+        .stats-card h6 {
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .stats-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .mode-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .professional-indicator { background-color: var(--professional); }
+        .innovative-indicator { background-color: var(--innovative); }
+        .semi-automatic-indicator { background-color: var(--semi-automatic); }
+        .manual-indicator { background-color: var(--manual); }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link for keyboard users -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container py-5">
+        <header class="header text-center holographic" role="banner">
+            <h1><i class="fas fa-chart-line me-2" aria-hidden="true"></i>HoloMesh <span class="holomesh-logo">Performance Dashboard</span></h1>
+            <p class="lead">Monitor and analyze the performance of HoloMesh interaction modes</p>
+            <p>Ми - сім'я, яка робить неможливе для всього людства!</p>
+        </header>
+        
+        <main id="main-content">
+            <section class="row mb-4" data-help-topic="Overall Performance Metrics" data-help-content="This section shows overall performance metrics for all optimization runs. Total optimizations count all runs, average success rate shows reliability, average execution time indicates speed, and average confidence score reflects AI certainty.">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-tachometer-alt me-2" aria-hidden="true"></i>Overall Performance Metrics</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="overallMetrics">
+                                <!-- Overall metrics will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="row mb-4">
+                <div class="col-md-8" data-help-topic="Performance Comparison" data-help-content="This chart compares performance metrics across different categories. It shows success rate, execution time, and confidence scores to help you understand optimization effectiveness.">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-chart-bar me-2" aria-hidden="true"></i>Performance Comparison</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="performanceChart" role="img" aria-label="Performance comparison chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-help-topic="Real-time Stats" data-help-content="These real-time statistics show current system status. Current tool indicates which CAD tool is active, active mode shows the interaction mode, average execution time reflects recent performance, and success rate shows reliability.">
+                    <aside class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-bolt me-2" aria-hidden="true"></i>Real-time Stats</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="stats-card">
+                                <h3><i class="fas fa-microchip me-2" aria-hidden="true"></i>Current Tool</h3>
+                                <div class="value" id="currentTool">Yosys</div>
+                            </div>
+                            <div class="stats-card">
+                                <h3><i class="fas fa-user me-2" aria-hidden="true"></i>Active Mode</h3>
+                                <div class="value"><span class="mode-indicator professional-indicator"></span>Professional</div>
+                            </div>
+                            <div class="stats-card">
+                                <h3><i class="fas fa-clock me-2" aria-hidden="true"></i>Avg. Execution Time</h3>
+                                <div class="value" id="avgTime">15.7s</div>
+                            </div>
+                            <div class="stats-card">
+                                <h3><i class="fas fa-check-circle me-2" aria-hidden="true"></i>Success Rate</h3>
+                                <div class="value" id="successRate">92%</div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+            
+            <section class="row">
+                <div class="col-md-6" data-help-topic="Recent Optimizations" data-help-content="This table shows your most recent optimization runs. It includes the tool used, interaction mode, execution time, confidence score, and status. Use this to track your optimization history.">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-list me-2" aria-hidden="true"></i>Recent Optimizations</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Tool</th>
+                                            <th scope="col">Mode</th>
+                                            <th scope="col">Time (s)</th>
+                                            <th scope="col">Confidence</th>
+                                            <th scope="col">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentOptimizations">
+                                        <!-- Recent optimizations will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6" data-help-topic="Mode Performance Details" data-help-content="This section allows you to analyze performance for specific tools and modes. Select a tool and interaction mode, then click 'Load Performance Data' to see detailed metrics including success rate, execution time, iterations, and confidence scores.">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-info-circle me-2" aria-hidden="true"></i>Mode Performance Details</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="toolSelect">Select Tool</label>
+                                <select class="form-select" id="toolSelect" aria-label="Select tool" data-tooltip="Choose a CAD tool to analyze" data-tooltip-position="top">
+                                    <option value="yosys">Yosys</option>
+                                    <option value="nextpnr">NextPNR</option>
+                                    <option value="verilator">Verilator</option>
+                                    <option value="openroad">OpenROAD</option>
+                                    <option value="vivado">Vivado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label" for="modeSelect">Select Interaction Mode</label>
+                                <select class="form-select" id="modeSelect" aria-label="Select interaction mode" data-tooltip="Choose an interaction mode to analyze" data-tooltip-position="top">
+                                    <option value="professional">Professional Mode</option>
+                                    <option value="innovative">Innovative Mode</option>
+                                    <option value="semi_automatic">Semi-Automatic Mode</option>
+                                    <option value="manual">Manual Mode</option>
+                                </select>
+                            </div>
+                            
+                            <button id="loadModePerformance" class="btn btn-holomesh w-100 pulse-animation" aria-label="Load performance data" data-tooltip="Load detailed performance data for selected tool and mode" data-tooltip-position="bottom">
+                                <i class="fas fa-sync me-2" aria-hidden="true"></i>Load Performance Data
+                            </button>
+                            
+                            <div class="mt-4" id="modePerformanceDetails">
+                                <!-- Mode performance details will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer-note">
+            <p>HoloMesh Technology by GlobalScope Family © 2025</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        // Import performance optimization utilities
+        import { HoloMeshPerformance } from '/static/js/performance.js';
+        
+        // Import accessibility utilities
+        import { HoloMeshAccessibility } from '/static/js/accessibility.js';
+        
+        // Import UI/UX enhancement utilities
+        import { HoloMeshUIEnhancements } from '/static/js/ui_enhancements.js';
+        
+        // Import achievement system
+        import { HoloMeshAchievementSystem } from '/static/js/achievement_system.js';
+        
+        // Import marketplace system
+        import { HoloMeshMarketplace } from '/static/js/marketplace_system.js';
+        
+        // Global variables
+        let performanceChart = null;
+        let performanceOptimizer = null;
+        let accessibilityHelper = null;
+        let uiEnhancer = null;
+        let achievementSystem = null;
+        let marketplace = null;
+        
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize performance optimization
+            performanceOptimizer = new HoloMeshPerformance();
+            
+            // Initialize accessibility helper
+            accessibilityHelper = new HoloMeshAccessibility();
+            
+            // Initialize UI/UX enhancer
+            uiEnhancer = new HoloMeshUIEnhancements();
+            
+            // Initialize achievement system
+            achievementSystem = new HoloMeshAchievementSystem();
+            
+            // Initialize marketplace
+            marketplace = new HoloMeshMarketplace();
+            
+            loadOverallPerformance();
+            loadRecentOptimizations();
+            setupEventListeners();
+            
+            // Simulate real-time updates
+            setInterval(updateRealTimeStats, 5000);
+        });
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('loadModePerformance').addEventListener('click', loadModePerformance);
+        }
+        
+        // Load overall performance metrics
+        function loadOverallPerformance() {
+            // In a real implementation, this would fetch from the API
+            // For demo purposes, we'll use simulated data
+            const overallData = {
+                total_optimizations: 1247,
+                avg_success_rate: 0.92,
+                avg_execution_time: 15.7,
+                avg_confidence_score: 0.84,
+                best_success_rate_mode: {
+                    mode: "semi_automatic",
+                    tool: "yosys",
+                    rate: 0.96
+                },
+                fastest_execution_mode: {
+                    mode: "professional",
+                    tool: "verilator",
+                    time: 8.3
+                },
+                highest_confidence_mode: {
+                    mode: "semi_automatic",
+                    tool: "nextpnr",
+                    confidence: 0.88
+                },
+                mode_count: 5
+            };
+            
+            displayOverallMetrics(overallData);
+            updatePerformanceChart(overallData);
+            updateRealTimeStats();
+        }
+        
+        // Display overall metrics
+        function displayOverallMetrics(data) {
+            const container = document.getElementById('overallMetrics');
+            container.innerHTML = `
+                <div class="col-md-3">
+                    <div class="metric-card card bg-success">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                        <div class="metric-value">${(data.avg_success_rate * 100).toFixed(1)}%</div>
+                        <div>Avg Success Rate</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card card bg-info">
+                        <i class="fas fa-clock fa-2x"></i>
+                        <div class="metric-value">${data.avg_execution_time.toFixed(1)}s</div>
+                        <div>Avg Execution Time</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card card bg-warning">
+                        <i class="fas fa-star fa-2x"></i>
+                        <div class="metric-value">${(data.avg_confidence_score * 100).toFixed(1)}%</div>
+                        <div>Avg Confidence</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card card bg-primary">
+                        <i class="fas fa-calculator fa-2x"></i>
+                        <div class="metric-value">${data.total_optimizations}</div>
+                        <div>Total Optimizations</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Update performance chart
+        function updatePerformanceChart(data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+            
+            // Create new chart
+            performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Success Rate', 'Execution Time', 'Confidence'],
+                    datasets: [{
+                        label: 'Overall Performance',
+                        data: [
+                            data.avg_success_rate * 100,
+                            data.avg_execution_time,
+                            data.avg_confidence_score * 100
+                        ],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.7)',
+                            'rgba(23, 162, 184, 0.7)',
+                            'rgba(255, 193, 7, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(23, 162, 184, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.9)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Load recent optimizations
+        function loadRecentOptimizations() {
+            // In a real implementation, this would fetch from the API
+            // For demo purposes, we'll use simulated data
+            const recentData = [
+                {
+                    tool_name: "yosys",
+                    interaction_mode: "semi_automatic",
+                    execution_time: 12.4,
+                    confidence_score: 0.87,
+                    success: true,
+                    timestamp: Date.now() - 1000 * 60 * 5
+                },
+                {
+                    tool_name: "nextpnr",
+                    interaction_mode: "manual",
+                    execution_time: 18.7,
+                    confidence_score: 0.82,
+                    success: true,
+                    timestamp: Date.now() - 1000 * 60 * 12
+                },
+                {
+                    tool_name: "verilator",
+                    interaction_mode: "professional",
+                    execution_time: 9.2,
+                    confidence_score: 0.91,
+                    success: true,
+                    timestamp: Date.now() - 1000 * 60 * 25
+                },
+                {
+                    tool_name: "yosys",
+                    interaction_mode: "innovative",
+                    execution_time: 22.1,
+                    confidence_score: 0.78,
+                    success: true,
+                    timestamp: Date.now() - 1000 * 60 * 35
+                },
+                {
+                    tool_name: "openroad",
+                    interaction_mode: "semi_automatic",
+                    execution_time: 35.6,
+                    confidence_score: 0.85,
+                    success: true,
+                    timestamp: Date.now() - 1000 * 60 * 45
+                }
+            ];
+            
+            displayRecentOptimizations(recentData);
+        }
+        
+        // Display recent optimizations
+        function displayRecentOptimizations(data) {
+            const container = document.getElementById('recentOptimizations');
+            container.innerHTML = '';
+            
+            data.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.tool_name}</td>
+                    <td>
+                        <span class="mode-indicator ${record.interaction_mode.replace('_', '-')}"></span>
+                        ${record.interaction_mode.replace('_', ' ')}
+                    </td>
+                    <td>${record.execution_time.toFixed(1)}s</td>
+                    <td>${(record.confidence_score * 100).toFixed(0)}%</td>
+                    <td><span class="badge bg-${record.success ? 'success' : 'danger'}">${record.success ? 'Success' : 'Failed'}</span></td>
+                `;
+                container.appendChild(row);
+            });
+        }
+        
+        // Load mode performance
+        function loadModePerformance() {
+            const tool = document.getElementById('toolSelect').value;
+            const mode = document.getElementById('modeSelect').value;
+            
+            // In a real implementation, this would fetch from the API
+            // For demo purposes, we'll use simulated data
+            const modeData = {
+                mode: mode,
+                tool: tool,
+                total_runs: Math.floor(Math.random() * 100) + 50,
+                success_rate: 0.85 + Math.random() * 0.15,
+                avg_execution_time: 10 + Math.random() * 20,
+                avg_iterations: 25 + Math.random() * 15,
+                avg_confidence_score: 0.75 + Math.random() * 0.2,
+                metric_averages: {
+                    execution_time: 15.3,
+                    quality_score: 0.88,
+                    resource_efficiency: 0.82
+                },
+                metric_improvements: {
+                    execution_time: -0.15,
+                    quality_score: 0.12,
+                    resource_efficiency: 0.08
+                }
+            };
+            
+            displayModePerformanceDetails(modeData);
+        }
+        
+        // Display mode performance details
+        function displayModePerformanceDetails(data) {
+            const container = document.getElementById('modePerformanceDetails');
+            container.innerHTML = `
+                <div class="row fade-in">
+                    <div class="col-md-6">
+                        <h5>Performance Metrics</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item bg-dark">
+                                <strong>Total Runs:</strong> <span class="float-end">${data.total_runs}</span>
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <strong>Success Rate:</strong> <span class="float-end">${(data.success_rate * 100).toFixed(1)}%</span>
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <strong>Avg Execution Time:</strong> <span class="float-end">${data.avg_execution_time.toFixed(1)}s</span>
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <strong>Avg Confidence:</strong> <span class="float-end">${(data.avg_confidence_score * 100).toFixed(1)}%</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Metric Improvements</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item bg-dark">
+                                <strong>Execution Time:</strong> 
+                                <span class="badge bg-${data.metric_improvements.execution_time < 0 ? 'success' : 'danger'} float-end">
+                                    ${(data.metric_improvements.execution_time * 100).toFixed(1)}%
+                                </span>
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <strong>Quality Score:</strong> 
+                                <span class="badge bg-success float-end">
+                                    +${(data.metric_improvements.quality_score * 100).toFixed(1)}%
+                                </span>
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <strong>Efficiency:</strong> 
+                                <span class="badge bg-success float-end">
+                                    +${(data.metric_improvements.resource_efficiency * 100).toFixed(1)}%
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Update real-time stats
+        function updateRealTimeStats() {
+            // Simulate changing stats
+            const tools = ['Yosys', 'NextPNR', 'Verilator', 'OpenROAD', 'Vivado'];
+            const modes = ['professional', 'innovative', 'semi_automatic', 'manual'];
+            
+            const currentTool = tools[Math.floor(Math.random() * tools.length)];
+            const currentMode = modes[Math.floor(Math.random() * modes.length)];
+            const avgTime = (10 + Math.random() * 15).toFixed(1);
+            const successRate = (85 + Math.random() * 10).toFixed(0);
+            
+            document.getElementById('currentTool').textContent = currentTool;
+            document.getElementById('avgTime').textContent = avgTime + 's';
+            document.getElementById('successRate').textContent = successRate + '%';
+            
+            // Update active mode indicator
+            const modeIndicator = document.querySelector('.mode-indicator');
+            modeIndicator.className = 'mode-indicator ' + currentMode.replace('_', '-') + '-indicator';
+            modeIndicator.nextElementSibling.textContent = currentMode.replace('_', ' ');
+        }
+    </script>
+</body>
+</html>
