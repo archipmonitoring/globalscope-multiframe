@@ -11,11 +11,25 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
     handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    if not logger.handlers:
-        logger.addHandler(handler)
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(handler)
     return logger
+
+def get_redis_client() -> redis.RedisCluster:
+    return redis.RedisCluster(
+        host='redis-service',
+        port=6379,
+        decode_responses=True,
+        password=os.getenv("REDIS_PASSWORD")
+    )
+
+async def store_redis_data(redis_client: redis.RedisCluster, key: str, data: Dict[str, Any]) -> None:
+    await redis_client.set(key, json.dumps(data))
+
+async def get_redis_data(redis_client: redis.RedisCluster, key: str) -> Dict[str, Any]:
+    data = await redis_client.get(key)
+    return json.loads(data) if data else {}
+
 
 def serialize_for_network(data: Any) -> str:
     return json.dumps(data)

@@ -1,6 +1,7 @@
-# GlobalScope MultiFrame 11.0
+# HoloMisha RealityForge: Передова AI-драйвова платформа для революціонізації процесів дизайну, тестування та виробництва чипів
 
-Advanced AI-driven optimization platform for chip design with HoloMesh interaction modes.
+## Overview
+GlobalScope MultiFrame 11.0: Artemis Edition (HoloMisha RealityForge) — це екосистема для досягнення "нульового рівня дефектів" (0% браку та 99.9999999% yield) у напівпровідниковій галузі. Інтегрує AI, WebXR, блокчейн та PQC.
 
 ## Overview
 
@@ -61,27 +62,30 @@ globalscope-multiframe/
 ```
 
 ## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/archipmonitoring/globalscope-multiframe.git
+   cd globalscope-multiframe
 
-```bash
-# Clone the repository
-git clone https://github.com/your-username/globalscope-multiframe.git
+Set up environment:
+bashcp config/.env.example config/.env
+# Edit config/.env with your keys
 
-# Navigate to the project directory
-cd globalscope-multiframe
+Install dependencies:
+bashpip install -r requirements.txt
 
-# Install dependencies
-pip install -r requirements.txt
-```
+Initialize database:
+bashpython config/init_database.py
 
-## Quick Start
+Run the app:
+bashpython main.py
 
-```bash
-# Initialize the database
-python init_database.py
+Run Web demo:
+bashcd web_demo
+python app.py
 
-# Start the main application
-python main.py
-```
+Deploy:
+bash./scripts/install.sh
 
 ## Documentation
 
@@ -91,6 +95,8 @@ python main.py
 - [Ukrainian Documentation](README_HOLOMESH_UKRAINIAN.md) - Ukrainian documentation
 - [API Reference](docs/api/) - Detailed API documentation
 - [Examples Directory](examples/) - Usage examples for all features
+- [Agent Dependencies Diagram](docs/AGENT_DEPENDENCIES.md) - Visual map of agent relationships
+- [Architecture Guidelines](docs/ARCHITECTURE_GUIDELINES.md) - Rules for building new agents
 
 ## Web Demo
 
@@ -107,22 +113,41 @@ python app.py
 Access the demo at http://localhost:5000
 
 ## Testing
+bashpytest tests/ --cov=src --cov-report=html
+locust -f tests/stress_test.py --host=http://localhost:8000 --users=150000
 
-```bash
-# Run all tests
-python -m pytest
-
-# Run specific test suites
-python -m pytest tests/unit/
-python -m pytest tests/integration/
-
-# Run chip design component tests
-python test_chip_components.py
-```
+## KPI Targets
+- 150,000 designers
+- 5,500 fabs
+- 0% defect rate
+- <0.0035 fJ/op
+- 80% CO2 reduction
+- motivation_score = 0.95
+- ROI = 400%
 
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more information.
+
+### Quick Start for Developers
+
+```bash
+# Clone the repo
+git clone https://github.com/your-username/globalscope-multiframe.git
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests
+python -m pytest
+
+# Start the app
+python main.py
+```
 
 ## License
 

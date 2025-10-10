@@ -1,0 +1,24 @@
+name: 🧠 Architecture Audit
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📦 Checkout code
+      uses: actions/checkout@v3
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 🧪 Run Agent Dependency Audit
+      run: |
+        python scripts/agent_dependency_audit.py

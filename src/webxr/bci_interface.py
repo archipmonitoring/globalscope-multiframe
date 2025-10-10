@@ -1,41 +1,40 @@
-import asyncio
-from typing import Dict, Any
-# from src.webxr.holomisha_ar import holo_misha_instance
-from src.ai.ai_design_automation import AIDesignAutomation
-from src.webxr.quest_master import QuestMaster
-# from src.security.security_logging_service import SecurityLoggingService
-import logging
+# src/webxr/bci_interface.py
+# Інтерфейс BCI (1024 канали, синтетика)
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("BCIInterface")
-ai_design = AIDesignAutomation()
-quest_master = QuestMaster()
-# security_logger = SecurityLoggingService()
+from typing import Dict, Any
+from src.lib.utils import get_logger
+from src.webxr.holoartem_ar import holo_artem_instance as holo_artem
 
 class BCIInterface:
     def __init__(self):
-        self.supported_commands = ["design_chip", "start_quest", "start_tour"]
+        self.logger = get_logger("BCIInterface")
 
-    async def process_bci_command(self, user_id: str, command: str, lang: str = "uk") -> Dict[str, Any]:
-        if command not in self.supported_commands:
-            # await holo_misha_instance.notify_ar(f"BCI command {command} not supported for {user_id} - HoloMisha programs the universe!", lang)
-            # await security_logger.log_security_event(user_id, "unsupported_bci_command", {"command": command})
-            return {"status": "error", "message": "Unsupported command"}
-        
-        if command == "design_chip":
-            chip_data = {"type": "quantum_chip", "params": {"cores": 4, "frequency": 3.5}}
-            # result = await ai_design.optimize_design(chip_data)
-            result = {"status": "success", "optimized_data": chip_data}  # Тимчасово встановлюємо напряму
-            # await holo_misha_instance.notify_ar(f"BCI chip design for {user_id}: {'Success' if result['status'] == 'success' else 'Failed'} - HoloMisha programs the universe!", lang)
-            # await security_logger.log_security_event(user_id, "bci_chip_design", {"status": result['status']})
-            return result
-        elif command == "start_quest":
-            quest_id = f"quest_{user_id}_{command}"
-            # await quest_master.update_quest_progress(user_id, [{"action": "bci_quest", "quest_id": quest_id}])
-            # await holo_misha_instance.notify_ar(f"BCI quest {quest_id} started for {user_id} - HoloMisha programs the universe!", lang)
-            # await security_logger.log_security_event(user_id, "bci_quest_start", {"quest_id": quest_id})
-            return {"status": "success", "quest_id": quest_id}
-        else:  # start_tour
-            # await holo_misha_instance.notify_ar(f"BCI tour started for {user_id} - HoloMisha programs the universe!", lang)
-            # await security_logger.log_security_event(user_id, "bci_tour_start", {"tour_id": f"tour_{user_id}"})
-            return {"status": "success", "tour_id": f"tour_{user_id}"}
+    async def process_bci_command(self, user_id: str, bci_data: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            self.logger.info(f"Processing BCI command for user {user_id}")
+
+            # Симуляція обробки нейросигналу
+            neural_signal = bci_data.get("neural_signal", [])
+            if len(neural_signal) != 1024:
+                raise ValueError("Invalid neural signal length")
+
+            # Аналіз сигналу (в реальності — FFT/ML)
+            avg_signal = sum(neural_signal) / len(neural_signal)
+            action = "design_update" if avg_signal > 0.5 else "pause"
+
+            await holo_artem.notify_ar(
+                f"BCI-команда оброблена: {action}! 🌌", lang="uk"
+            )
+
+            return {
+                "status": "success",
+                "user_id": user_id,
+                "bci_output": {
+                    "action": action,
+                    "value": avg_signal
+                }
+            }
+        except Exception as e:
+            self.logger.error(f"BCI processing error: {str(e)}")
+            await holo_artem.notify_ar(f"Помилка BCI: {str(e)}", lang="uk")
+            return {"error": str(e)}

@@ -9,6 +9,7 @@ import json
 import uuid
 from datetime import datetime
 import random
+from flask_socketio import SocketIO, emit
 
 # Add the project root to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -23,6 +24,7 @@ from src.db import crud, models
 from src.db.init_db import init_db
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Initialize database
 try:
@@ -270,6 +272,41 @@ def get_live_stats():
         "success_rate": round(random.uniform(85, 98), 0)
     })
 
+# WebSocket endpoint for real-time updates
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+    emit('status', {'msg': 'Connected to HoloMesh WebSocket! 🌌'})
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+@socketio.on('request_optimization')
+def handle_optimization_request(data):
+    """Handle optimization request via WebSocket"""
+    try:
+        # Simulate optimization process
+        for i in range(10):
+            socketio.sleep(0.5)
+            emit('optimization_progress', {
+                'step': i + 1,
+                'message': f'Optimization step {i + 1}/10 completed',
+                'progress': (i + 1) * 10
+            })
+        
+        # Final result
+        emit('optimization_complete', {
+            'status': 'success',
+            'message': 'Optimization completed with HoloMesh AI! 🌌',
+            'result': {
+                'optimized_params': {'area': 85.5, 'power': 12.3},
+                'confidence': 0.92
+            }
+        })
+    except Exception as e:
+        emit('optimization_error', {'error': str(e)})
+
 @app.route('/api/visualization-data')
 def get_visualization_data():
     """Get data for 3D visualization"""
@@ -462,4 +499,4 @@ def get_marketplace_stats():
         db.close()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)

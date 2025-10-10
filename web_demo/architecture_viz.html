@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>🧬 HoloMesh Architecture Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: rgba(30, 30, 40, 0.6);
+      --text-light: #f0f6fc;
+      --accent: #58a6ff;
+      --border-radius: 12px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(10, 15, 30, 0.8);
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #58a6ff, #ff7b9c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .container {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin: 1rem 0;
+      width: 90%;
+      max-width: 1000px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(92, 164, 255, 0.2);
+    }
+
+    #graph {
+      width: 100%;
+      height: 500px;
+      background: rgba(20, 20, 30, 0.5);
+      border-radius: var(--border-radius);
+      margin-top: 1rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧬 HoloMesh Architecture Visualizer</h1>
+    <p>Інтерактивна мапа зв’язків між агентами системи</p>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>🔗 Зв’язки агентів</h2>
+      <button id="refreshBtn">🔄 Оновити граф</button>
+      <div id="graph"></div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #58a6ff;"></div>
+          <span>Агент</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #ff7b9c;"></div>
+          <span>Зв’язок</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 HoloMisha Platform | Людино-центрована інновація</p>
+  </footer>
+
+  <!-- Mermaid.js for graph visualization -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+
+    async function renderGraph() {
+      const graphDefinition = `
+        graph TD
+          A[AIStrategyEngine] --> B(AITrendAnalyzer)
+          A --> C(holo_misha_instance)
+          A --> D(SecurityLoggingService)
+
+          E[AutoScalingEngine] --> F(FabAnalytics)
+          E --> C
+          E --> D
+
+          G[ChipFlowOrchestrator] --> H(QuestMaster)
+          G -.-> C
+          G -.-> D
+
+          I[TaskFusionEngine] --> J(AgentCoreTrainer)
+          I --> K(ChipFlowOrchestratorImpl)
+          I --> L(QuantumSingularityFirewall)
+          I --> M(AgentGuard)
+          I --> N(PredictiveScalingEngine)
+          I --> O(ZeroDefectEngine)
+          I --> P(FamilyCollaborationEngine)
+          I --> Q(AIDesignAutomation)
+          I --> D
+          I --> R(holo_misha_instance)
+      `;
+
+      const element = document.getElementById('graph');
+      const { svg } = await mermaid.render('graphDiv', graphDefinition);
+      element.innerHTML = svg;
+    }
+
+    // Початкове завантаження
+    renderGraph();
+
+    // Оновлення графу
+    document.getElementById('refreshBtn').onclick = async () => {
+      renderGraph();
+    };
+  </script>
+</body>
+</html>

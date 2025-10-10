@@ -1,158 +1,132 @@
-// HoloMesh 3D Visualization Module
-// Using Three.js for interactive 3D chip design visualization
+// web_demo/static/js/threejs_visualization.js
+// 3D Visualization for HoloMesh using A-Frame
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.132.2/examples/jsm/controls/OrbitControls.js';
-
-class HoloMesh3DVisualizer {
+export class HoloMesh3DVisualizer {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.scene = null;
-        this.camera = null;
-        this.renderer = null;
-        this.controls = null;
-        this.chipModel = null;
-        
+        this.chipEntity = null;
         this.init();
     }
-    
+
     init() {
-        // Create scene
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x0f0c29);
-        
-        // Create camera
-        this.camera = new THREE.PerspectiveCamera(
-            75, 
-            this.container.clientWidth / this.container.clientHeight, 
-            0.1, 
-            1000
-        );
-        this.camera.position.z = 5;
-        
-        // Create renderer
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.container.appendChild(this.renderer.domElement);
-        
+        if (!this.container) return;
+
+        // Create A-Frame scene
+        this.scene = document.createElement('a-scene');
+        this.scene.setAttribute('embedded', '');
+        this.scene.setAttribute('vr-mode-ui', 'enabled: false');
+
+        // Add assets
+        const assets = document.createElement('a-assets');
+        const texture = document.createElement('img');
+        texture.id = 'chipTexture';
+        texture.src = '/static/images/chip_texture.jpg';
+        assets.appendChild(texture);
+        this.scene.appendChild(assets);
+
+        // Add camera
+        const cameraEntity = document.createElement('a-entity');
+        cameraEntity.setAttribute('position', '0 1.6 3');
+        const camera = document.createElement('a-camera');
+        camera.setAttribute('look-controls', 'enabled: true');
+        camera.setAttribute('wasd-controls', 'enabled: false');
+        cameraEntity.appendChild(camera);
+        this.scene.appendChild(cameraEntity);
+
+        // Add chip model
+        this.chipEntity = document.createElement('a-entity');
+        this.chipEntity.id = 'chipModel';
+        this.chipEntity.setAttribute('position', '0 1.5 -1');
+        this.chipEntity.setAttribute('rotation', '0 45 0');
+
+        const chipBox = document.createElement('a-box');
+        chipBox.setAttribute('width', '3');
+        chipBox.setAttribute('height', '0.2');
+        chipBox.setAttribute('depth', '3');
+        chipBox.setAttribute('color', '#6a11cb');
+        chipBox.setAttribute('src', '#chipTexture');
+        chipBox.setAttribute('shadow', 'cast: true; receive: true');
+        this.chipEntity.appendChild(chipBox);
+
+        // Add circuit patterns
+        const pattern1 = document.createElement('a-box');
+        pattern1.setAttribute('width', '0.1');
+        pattern1.setAttribute('height', '0.02');
+        pattern1.setAttribute('depth', '0.5');
+        pattern1.setAttribute('position', '0.5 0.11 0.3');
+        pattern1.setAttribute('rotation', '0 0 0');
+        pattern1.setAttribute('color', '#2575fc');
+        chipBox.appendChild(pattern1);
+
+        const pattern2 = document.createElement('a-box');
+        pattern2.setAttribute('width', '0.15');
+        pattern2.setAttribute('height', '0.02');
+        pattern2.setAttribute('depth', '0.3');
+        pattern2.setAttribute('position', '-0.7 0.11 -0.4');
+        pattern2.setAttribute('rotation', '0 0 0');
+        pattern2.setAttribute('color', '#ff00cc');
+        chipBox.appendChild(pattern2);
+
+        const pattern3 = document.createElement('a-box');
+        pattern3.setAttribute('width', '0.08');
+        pattern3.setAttribute('height', '0.02');
+        pattern3.setAttribute('depth', '0.7');
+        pattern3.setAttribute('position', '0.2 0.11 0.8');
+        pattern3.setAttribute('rotation', '0 0 0');
+        pattern3.setAttribute('color', '#28a745');
+        chipBox.appendChild(pattern3);
+
+        this.scene.appendChild(this.chipEntity);
+
         // Add lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        this.scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(10, 20, 15);
-        this.scene.add(directionalLight);
-        
-        // Add orbit controls
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableDamping = true;
-        this.controls.dampingFactor = 0.05;
-        
-        // Create a simple chip model placeholder
-        this.createChipModel();
-        
-        // Handle window resize
-        window.addEventListener('resize', () => this.onWindowResize());
-        
-        // Start animation loop
-        this.animate();
+        const ambientLight = document.createElement('a-light');
+        ambientLight.setAttribute('type', 'ambient');
+        ambientLight.setAttribute('color', '#445');
+        this.scene.appendChild(ambientLight);
+
+        const directionalLight = document.createElement('a-light');
+        directionalLight.setAttribute('type', 'directional');
+        directionalLight.setAttribute('color', '#fff');
+        directionalLight.setAttribute('intensity', '0.5');
+        directionalLight.setAttribute('position', '-1 2 1');
+        this.scene.appendChild(directionalLight);
+
+        const pointLight = document.createElement('a-light');
+        pointLight.setAttribute('type', 'point');
+        pointLight.setAttribute('color', '#6a11cb');
+        pointLight.setAttribute('intensity', '0.8');
+        pointLight.setAttribute('position', '2 3 -1');
+        this.scene.appendChild(pointLight);
+
+        // Add environment
+        const sky = document.createElement('a-sky');
+        sky.setAttribute('color', '#0f0c29');
+        this.scene.appendChild(sky);
+
+        // Add scene to container
+        this.container.innerHTML = '';
+        this.container.appendChild(this.scene);
     }
-    
-    createChipModel() {
-        // Remove existing model if present
-        if (this.chipModel) {
-            this.scene.remove(this.chipModel);
+
+    updateChipModel(data) {
+        if (!this.chipEntity) return;
+
+        // Update chip properties based on optimization data
+        const chipBox = this.chipEntity.querySelector('a-box');
+        if (data.optimized_params) {
+            // Example: change color based on efficiency
+            const efficiency = data.final_metrics?.resource_efficiency || 0.5;
+            const hue = Math.floor(efficiency * 120); // 0-120 (red to green)
+            chipBox.setAttribute('color', `hsl(${hue}, 100%, 50%)`);
         }
-        
-        // Create a simple representation of a chip design
-        const group = new THREE.Group();
-        
-        // Main chip body
-        const chipGeometry = new THREE.BoxGeometry(3, 0.2, 3);
-        const chipMaterial = new THREE.MeshPhongMaterial({ 
-            color: 0x2575fc,
-            transparent: true,
-            opacity: 0.8
+
+        // Animate update
+        this.chipEntity.setAttribute('animation', {
+            property: 'rotation',
+            to: `0 ${parseInt(this.chipEntity.getAttribute('rotation').y) + 360} 0`,
+            dur: 1000,
+            easing: 'easeInOutQuad'
         });
-        const chipBody = new THREE.Mesh(chipGeometry, chipMaterial);
-        group.add(chipBody);
-        
-        // Add some circuit patterns
-        const circuitMaterial = new THREE.MeshPhongMaterial({ color: 0x6a11cb });
-        
-        for (let i = 0; i < 20; i++) {
-            const width = Math.random() * 0.2 + 0.05;
-            const length = Math.random() * 0.8 + 0.2;
-            const height = 0.02;
-            
-            const circuitGeometry = new THREE.BoxGeometry(width, height, length);
-            const circuit = new THREE.Mesh(circuitGeometry, circuitMaterial);
-            
-            circuit.position.x = (Math.random() - 0.5) * 2.5;
-            circuit.position.y = 0.11;
-            circuit.position.z = (Math.random() - 0.5) * 2.5;
-            
-            circuit.rotation.y = Math.random() * Math.PI;
-            
-            group.add(circuit);
-        }
-        
-        // Add some connection points
-        const pointGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-        const pointMaterial = new THREE.MeshPhongMaterial({ 
-            color: 0xff00cc,
-            emissive: 0xaa0088
-        });
-        
-        for (let i = 0; i < 30; i++) {
-            const point = new THREE.Mesh(pointGeometry, pointMaterial);
-            
-            point.position.x = (Math.random() - 0.5) * 2.8;
-            point.position.y = 0.12;
-            point.position.z = (Math.random() - 0.5) * 2.8;
-            
-            group.add(point);
-        }
-        
-        this.chipModel = group;
-        this.scene.add(this.chipModel);
-    }
-    
-    updateChipModel(optimizationData) {
-        // In a real implementation, this would update the 3D model based on optimization data
-        // For now, we'll just recreate the model with some variation
-        this.createChipModel();
-    }
-    
-    onWindowResize() {
-        this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    }
-    
-    animate() {
-        requestAnimationFrame(() => this.animate());
-        
-        // Rotate the chip model slowly
-        if (this.chipModel) {
-            this.chipModel.rotation.y += 0.005;
-        }
-        
-        this.controls.update();
-        this.renderer.render(this.scene, this.camera);
-    }
-    
-    dispose() {
-        // Clean up resources
-        if (this.renderer) {
-            this.renderer.dispose();
-        }
-        
-        // Remove event listeners
-        window.removeEventListener('resize', () => this.onWindowResize());
     }
 }
-
-// Export the class
-export { HoloMesh3DVisualizer };
